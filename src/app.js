@@ -37,42 +37,41 @@ instance.post("/users/create", (req, res)=> {
     const sql = "INSERT INTO users(name, age, username, password) VALUES(?,?,?,?)"
     db.query(sql, [body.name, body.age, body.username, body.password], (err, result)=> {
         if (err) {
-            res.status(422)
+            res.status(422).send(err)
             throw err
         }
 
-        res.status(201)
+        res.status(201).send("User created!")
+    })
+})
+
+instance.delete("/users/:id", (req, res)=> {
+    let sql = "DELETE FROM users WHERE id=?"
+    db.query(sql, req.params.id, (err, result)=> {
+        if (err) {
+            res.status(404).send(err)
+            throw err
+        }
+
+        res.status(204).send("User removed!")
+    })
+})
+
+
+instance.put("/users/:id", (req, res) => {
+    let sql = "UPDATE users SET name=?, username=?, password=?, age=?"
+    let body = req.body
+    db.query(sql, [body.name, body.username, body.password, body.age], (err, result)=> {
+        if (err) {
+            res.status(404).send(err)
+            throw err
+        }
+
+        res.status(204).send("User has been updated sucessfully")
     })
 })
 
 /*
-instance.delete("/users/:id", (req, res)=> {
-    let user = findUserByID(req.params.id)
-    if (user != null) {
-        users.splice(findIndexUser(user))
-        res.status(204).send("Usuário deletado com sucesso!")
-        return
-    }
-
-    res.status(204).send("Nenhum usuário com esse ID foi encontrado!")
-})
-
-instance.put("/users/:id", (req, res) => {
-    let user = findUserByID(req.params.id)
-    if (user === null) {
-        res.status(400).send("Usuário não encontrado")
-        return
-    }
-
-    let body = res.body
-    let indexUser = users[findIndexUser(user)]
-    indexUser.name = body.name
-    indexUser.username = body.username
-    indexUser.password = body.password
-    indexUser.age = body.age
-    res.status(204).send("Usuário atualizado com sucesso!")
-})
-
 function findUserByID(id) {
     const foundUser = users.find(user => user.id == id);
     return foundUser || null;
@@ -81,6 +80,6 @@ function findUserByID(id) {
 function findIndexUser(user) {
     return users.findIndex(userFilter => userFilter === user) || -1
 }
-
 */
+
 export default instance
