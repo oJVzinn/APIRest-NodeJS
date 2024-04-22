@@ -1,75 +1,14 @@
 import express from 'express'
-import User from './user.js'
-import db from './infra/db.js'
+import userController from './app/controller/userController.js'
 
 const instance = express()
-
 instance.use(express.json())
 
-instance.get("/users", (req, res) => {
-    const sql = "SELECT * FROM users"
-    db.query(sql, (err, result)=> {
-        if (err) {
-            res.status(404).send(err)
-            throw err
-        }
-
-        res.status(200).json(result)
-    })
-})
-
-
-instance.get("/users/:id", (req, res) => {
-    const id = req.params.id
-    const sql = "SELECT * FROM users WHERE id=?"
-    db.query(sql, id, (err, result)=> {
-        if (err) {
-            res.status(404).send(err)
-            throw err
-        }
-
-        res.status(200).send(result[0])
-    })
-})
-
-instance.post("/users/create", (req, res)=> {
-    let body = req.body
-    const sql = "INSERT INTO users(name, age, username, password) VALUES(?,?,?,?)"
-    db.query(sql, [body.name, body.age, body.username, body.password], (err, result)=> {
-        if (err) {
-            res.status(422).send(err)
-            throw err
-        }
-
-        res.status(201).send("User created!")
-    })
-})
-
-instance.delete("/users/:id", (req, res)=> {
-    let sql = "DELETE FROM users WHERE id=?"
-    db.query(sql, req.params.id, (err, result)=> {
-        if (err) {
-            res.status(404).send(err)
-            throw err
-        }
-
-        res.status(204).send("User removed!")
-    })
-})
-
-
-instance.put("/users/:id", (req, res) => {
-    let sql = "UPDATE users SET name=?, username=?, password=?, age=?"
-    let body = req.body
-    db.query(sql, [body.name, body.username, body.password, body.age], (err, result)=> {
-        if (err) {
-            res.status(404).send(err)
-            throw err
-        }
-
-        res.status(204).send("User has been updated sucessfully")
-    })
-})
+instance.post("/users/create", userController.store)
+instance.get("/users", userController.index)
+instance.get("/users/:id", userController.show)
+instance.put("/users/:id", userController.update)
+instance.delete("/users/:id", userController.delete)
 
 /*
 function findUserByID(id) {
