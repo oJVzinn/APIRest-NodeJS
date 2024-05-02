@@ -1,68 +1,33 @@
-import db from '../database/db.js'
+import { response } from 'express'
+import UserRepository from '../repositories/usersRepository.js'
 
 class UserController {
 
-    index(req, res) {
-        const sql = "SELECT * FROM users"
-        db.query(sql, (err, result)=> {
-            if (err) {
-                res.status(404).send(err)
-                throw err
-            }
-    
-            res.status(200).json(result)
-        })
+    async index(req, res) {
+        const response = await UserRepository.findAll()
+        res.send(response)
     }
 
-    show(req, res) {
-        const id = req.params.id
-        const sql = "SELECT * FROM users WHERE id=?"
-        db.query(sql, id, (err, result)=> {
-            if (err) {
-                res.status(404).send(err)
-                throw err
-            }
-    
-            res.status(200).send(result[0])
-        })
+    async show(req, res) {
+        const response = await UserRepository.findByID(req.params.id)
+        res.send(response)
     }
 
-    store(req, res) {
-        let body = req.body
-        const sql = "INSERT INTO users(name, age, username, password) VALUES(?,?,?,?)"
-        db.query(sql, [body.name, body.age, body.username, body.password], (err, result)=> {
-            if (err) {
-                res.status(422).send(err)
-                throw err
-            }
-    
-            res.status(201).send("User created!")
-        })
+    async store(req, res) {
+        const body = req.body
+        const reponse = await UserRepository.create(body.name, body.age, body.username, body.password)
+        res.send(response)
     }
 
-    update(req, res) {
-        let sql = "UPDATE users SET name=?, username=?, password=?, age=?"
-        let body = req.body
-        db.query(sql, [body.name, body.username, body.password, body.age], (err, result)=> {
-            if (err) {
-                res.status(404).send(err)
-                throw err
-            }
-    
-            res.status(204).send("User has been updated sucessfully")
-        })
+    async update(req, res) {
+        const body = req.body
+        const reponse = await UserRepository.update(body.name, body.age, body.username, body.password)
+        res.send(response)
     }
 
-    delete(req, res) {
-        let sql = "DELETE FROM users WHERE id=?"
-        db.query(sql, req.params.id, (err, result)=> {
-            if (err) {
-                res.status(404).send(err)
-                throw err
-            }
-    
-            res.status(204).send("User removed!")
-        })
+    async delete(req, res) {
+        const response = await UserRepository.delete(req.params.id)
+        res.send(response)
     }
 
 }
