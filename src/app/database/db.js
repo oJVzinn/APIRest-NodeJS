@@ -24,4 +24,20 @@ connection.query(sql, (err) => {
     if (err) throw err
 })
 
+
+/**
+ * executes SQL codes
+ * @param {String} sql sql code
+ * @param {array} params paraments for sql
+ * @returns promise object
+ */
+export const consult = (sql, params='') => {
+    return new Promise((resolve, reject)=> {
+        connection.query(sql, params, (err, result)=> {
+            if (err) return reject(err)
+            return resolve(result)
+        })
+    })
+}
+
 export default connection
